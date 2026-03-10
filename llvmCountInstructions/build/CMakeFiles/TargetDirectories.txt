@@ -1,8 +1,0 @@
-/run/media/milutin/D/llvmPractice/llvmCountInstructions/build/CMakeFiles/intrinsics_gen.dir
-/run/media/milutin/D/llvmPractice/llvmCountInstructions/build/CMakeFiles/vt_gen.dir
-/run/media/milutin/D/llvmPractice/llvmCountInstructions/build/CMakeFiles/omp_gen.dir
-/run/media/milutin/D/llvmPractice/llvmCountInstructions/build/CMakeFiles/acc_gen.dir
-/run/media/milutin/D/llvmPractice/llvmCountInstructions/build/CMakeFiles/target_parser_gen.dir
-/run/media/milutin/D/llvmPractice/llvmCountInstructions/build/CMakeFiles/pass.dir
-/run/media/milutin/D/llvmPractice/llvmCountInstructions/build/CMakeFiles/edit_cache.dir
-/run/media/milutin/D/llvmPractice/llvmCountInstructions/build/CMakeFiles/rebuild_cache.dir
