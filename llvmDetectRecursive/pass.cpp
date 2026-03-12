@@ -2,6 +2,7 @@
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
+#include <iostream>
 #include <llvm/ADT/StringRef.h>
 #include <llvm/Config/llvm-config.h>
 #include <llvm/IR/BasicBlock.h>
@@ -16,19 +17,22 @@ using namespace llvm;
 
 
 
-struct FunctionNamePass:PassInfoMixin<FunctionNamePass>{
+struct RecursiveDetectPass:PassInfoMixin<RecursiveDetectPass>{
     PreservedAnalyses run(Function&f,FunctionAnalysisManager &){
-        errs()<<"Function "<<f.getName()<<"\n";
+        bool det=false;
         for(BasicBlock &bb:f){
             for(Instruction &i:bb){
                 CallInst* call=dyn_cast<CallInst>(&i);
                 if(call){
                     Function *f1=call->getCalledFunction();
-                    if(f1){
-                            errs()<<"Found function "<<f1->getName().str()<<" inside "<<f.getName().str()<<"\n";
+                    if(f1 && f1->getName().compare(f.getName())==0){
+                            det=true;
                     }
                 }
             }
+        }
+        if(det){
+            std::cout<<"Recursive function detected "<< f.getName().str() <<std::endl;
         }
         return PreservedAnalyses::all();
     }
@@ -37,12 +41,12 @@ struct FunctionNamePass:PassInfoMixin<FunctionNamePass>{
 extern "C" LLVM_ATTRIBUTE_WEAK PassPluginLibraryInfo llvmGetPassPluginInfo(){
     return {
         LLVM_PLUGIN_API_VERSION,
-        "FunctionNamePass",
+        "RecursiveDetectPass",
         LLVM_VERSION_STRING,
         [](PassBuilder &pB){
             pB.registerPipelineParsingCallback([](StringRef name,FunctionPassManager &fPM,...){
                 if(name=="func-names"){
-                    fPM.addPass(FunctionNamePass());
+                    fPM.addPass(RecursiveDetectPass());
                     return true;
                 }
                 return false;
