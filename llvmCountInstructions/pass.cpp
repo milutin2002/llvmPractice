@@ -24,7 +24,7 @@ typedef struct Stats{
 
 struct InstCountPass:PassInfoMixin<InstCountPass>{
     PreservedAnalyses run(Function&f,FunctionAnalysisManager &){
-        errs()<<"Function "<<f.getName()<<"\n";
+        outs()<<"Function "<<f.getName()<<"\n";
         Stats s;
         s.name=f.getName();
         for(BasicBlock &bb:f){
@@ -33,7 +33,7 @@ struct InstCountPass:PassInfoMixin<InstCountPass>{
             }
         }
         for(auto it=s.map.begin();it!=s.map.end();it++){
-            errs()<<it->first<<" "<<it->second<<"\n";
+            outs()<<it->first<<" "<<it->second<<"\n";
         }
         return PreservedAnalyses::all();
     }

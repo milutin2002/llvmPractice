@@ -18,14 +18,14 @@ using namespace llvm;
 
 struct FunctionNamePass:PassInfoMixin<FunctionNamePass>{
     PreservedAnalyses run(Function&f,FunctionAnalysisManager &){
-        errs()<<"Function "<<f.getName()<<"\n";
+        outs()<<"Function "<<f.getName()<<"\n";
         for(BasicBlock &bb:f){
             for(Instruction &i:bb){
                 CallInst* call=dyn_cast<CallInst>(&i);
                 if(call){
                     Function *f1=call->getCalledFunction();
                     if(f1){
-                            errs()<<"Found function "<<f1->getName().str()<<" inside "<<f.getName().str()<<"\n";
+                            outs()<<"Found function "<<f1->getName().str()<<" inside "<<f.getName().str()<<"\n";
                     }
                 }
             }
