@@ -1,13 +1,22 @@
-# llvmFunctionName
+# llvmFunctionName — Direct Call-Site Discovery Pass (`func-names`)
 
-This repo demonstrates pass which prints the name of function inside main.c and then it iterates over all blocks and prints the name of functions called inside that block
+- Prints **direct callees** found inside each function by walking call instructions.
+- A practical starting point for call graph construction and interprocedural analysis.
 
-```
-mkdir build
-cd build
-cmake ..
-cmake --build .
-clang -O1 -S -emit-llvm -o main.ll ../main.c
-opt -load-pass-plugin ../pass.so --passes="func-names" ./main.ll
+## What this pass does
 
-```
+For each `Function`:
+- iterates over instructions
+- `dyn_cast<CallInst>` to detect calls
+- uses `getCalledFunction()` and prints `Found function <callee> inside <caller>`
+
+**Concept mapping:** call-site inspection → call graph edges (interprocedural analysis starter).
+
+> Limitation: `getCalledFunction()` is only available for **direct calls**; indirect calls are skipped.
+
+## Build & run
+
+### Build
+```bash
+cmake -S . -B build
+cmake --build build -j
