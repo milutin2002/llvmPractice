@@ -1,9 +1,8 @@
 # llvmPractice — LLVM Analysis Pass Plugins
 
 - **Multiple LLVM analysis passes** implemented as **out-of-tree pass plugins** (one subfolder per pass).
-- Demonstrates **compiler infrastructure fundamentals**: LLVM IR traversal, instruction-level metrics, and call-site/call-graph properties.
+- Demonstrates **compiler infrastructure fundamentals**: LLVM IR traversal and call-site properties.
 - Designed to be **reproducible and demoable**: CMake builds + `clang -S -emit-llvm` + `opt -load-pass-plugin` pipelines.
-- Interview-ready framing for **performance/debug tooling** and **hardware-aware analysis**, aligned with Tenstorrent’s Foundation SW internship focus.
 
 > Repo goal: build small, readable analysis passes that produce “compiler telemetry” and can be extended into tooling.
 
@@ -26,15 +25,11 @@ Current detected pass folders:
 
 LLVM **analysis passes** compute properties of IR without changing semantics. In practice, analysis is the foundation for:
 - **Compiler infrastructure:** analyses enable or guide optimizations and correctness checks.
-- **Performance tooling:** analyses generate metrics/telemetry that explain “what code looks like” and how it may behave.
 - **Hardware-aware compilation:** analyses feed cost models and constraints (e.g., recursion constraints, call patterns, instruction mixes).
 
-**Tenstorrent Foundation SW Engineering internship alignment (high-level):**
-- Tenstorrent emphasizes **performance profiling, debugging, and AI-related workloads**, plus building **developer tools** that provide clear views into performance and system behavior.
-- These passes are small examples of “developer-facing observability” at the compiler IR level: they produce structured output that can evolve into tooling.
+
 
 Primary references:
-- Tenstorrent posting: https://job-boards.greenhouse.io/tenstorrentuniversity/jobs/4668185007
 - LLVM new pass manager (`opt -passes`, nesting, `-load-pass-plugin`):
   https://llvm.org/docs/NewPassManager.html
 - Writing a new-PM LLVM pass (plugin registration patterns):
