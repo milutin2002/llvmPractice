@@ -1,13 +1,28 @@
-# llvmFunctionName
 
-This repo demonstrates pass which prints the count of every type of inst for every function inside main.c and then it iterates over all blocks and prints the name of functions called inside that block
+## `llvmCountInstructions/README.md`
 
-```
-mkdir build
-cd build
-cmake ..
-cmake --build .
-clang -O1 -S -emit-llvm -o main.ll ../main.c
-opt -load-pass-plugin ../pass.so --passes="func-names" ./main.ll
+# llvmCountInstructions — Instruction Mix Metrics Pass (`inst-count`)
 
-```
+- Counts LLVM IR instruction opcodes **per function** and prints a small “instruction mix” histogram.
+
+## What this pass does
+
+For each `Function` in the input IR:
+- iterates `BasicBlock` → `Instruction`
+- counts `Instruction::getOpcodeName()` occurrences
+- prints results using `llvm::outs()`
+
+**Concept mapping:** instruction analysis + metrics.
+
+> Note: the implementation uses an unordered map, so output ordering can vary.
+
+## Build & run
+
+### Prerequisites
+- LLVM + Clang installed (`clang`, `opt`, headers + LLVMConfig.cmake)
+- CMake 3.20+, C++17 compiler
+
+### Build
+```bash
+cmake -S . -B build
+cmake --build build -j
