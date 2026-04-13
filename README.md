@@ -1,3 +1,66 @@
-# llvmPractice
+# llvmPractice — LLVM Analysis Pass Plugins
 
-This repo demonstrates my llvm practice and some basic passes implemented in llvm
+- **Multiple LLVM analysis passes** implemented as **out-of-tree pass plugins** (one subfolder per pass).
+- Demonstrates **compiler infrastructure fundamentals**: LLVM IR traversal, instruction-level metrics, and call-site/call-graph properties.
+- Designed to be **reproducible and demoable**: CMake builds + `clang -S -emit-llvm` + `opt -load-pass-plugin` pipelines.
+- Interview-ready framing for **performance/debug tooling** and **hardware-aware analysis**, aligned with Tenstorrent’s Foundation SW internship focus.
+
+> Repo goal: build small, readable analysis passes that produce “compiler telemetry” and can be extended into tooling.
+
+---
+
+## What this repository contains
+
+This repository is organized as **one pass per folder**. Each folder builds a standalone LLVM **pass plugin** (shared library) exposing a named pipeline pass that you can run via `opt`.
+
+Current detected pass folders:
+- `llvmCountInstructions/` — instruction opcode histogram per function (`inst-count`)
+- `llvmFunctionName/` — direct call-site discovery (`func-names`)
+- `llvmDetectRecursive/` — direct recursion detection (**currently also** `func-names`; recommended rename)
+
+> **Unspecified / unknown future passes:** If you add more subfolders, follow the template at the bottom of this README.
+
+---
+
+## Why analysis passes matter (and why this maps to Tenstorrent)
+
+LLVM **analysis passes** compute properties of IR without changing semantics. In practice, analysis is the foundation for:
+- **Compiler infrastructure:** analyses enable or guide optimizations and correctness checks.
+- **Performance tooling:** analyses generate metrics/telemetry that explain “what code looks like” and how it may behave.
+- **Hardware-aware compilation:** analyses feed cost models and constraints (e.g., recursion constraints, call patterns, instruction mixes).
+
+**Tenstorrent Foundation SW Engineering internship alignment (high-level):**
+- Tenstorrent emphasizes **performance profiling, debugging, and AI-related workloads**, plus building **developer tools** that provide clear views into performance and system behavior.
+- These passes are small examples of “developer-facing observability” at the compiler IR level: they produce structured output that can evolve into tooling.
+
+Primary references:
+- Tenstorrent posting: https://job-boards.greenhouse.io/tenstorrentuniversity/jobs/4668185007
+- LLVM new pass manager (`opt -passes`, nesting, `-load-pass-plugin`):
+  https://llvm.org/docs/NewPassManager.html
+- Writing a new-PM LLVM pass (plugin registration patterns):
+  https://llvm.org/docs/WritingAnLLVMNewPMPass.html
+- Clang IR emission example (`clang file.c -S -emit-llvm`):
+  https://clang.llvm.org/get_started.html
+
+---
+
+## Quick start (download → build → run)
+
+### Prerequisites
+
+You need an LLVM installation that provides:
+- `clang`
+- `opt`
+- LLVM headers + CMake config (`LLVMConfig.cmake`)
+
+> Practical note: out-of-tree plugins generally work best when the **LLVM used to build the plugin matches the `opt` you run**.
+
+### Build any pass plugin (per folder)
+
+Each pass folder is self-contained. Example for `llvmCountInstructions`:
+
+```bash
+cd llvmCountInstructions
+cmake -S . -B build
+cmake --build build -j
+# Output artifact (Linux): build/pass.so
