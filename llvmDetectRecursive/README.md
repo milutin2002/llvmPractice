@@ -1,13 +1,25 @@
-# llvmFunctionName
+# llvmDetectRecursive — Direct Recursion Detector Pass (currently `func-names`)
 
-This repo demonstrates pass which prints the all recursive functions
+- Detects **direct recursion**: a function contains a direct call to itself.
+- Useful as an “early warning” analysis for compilation targets or runtimes that restrict recursion.
 
-```
-mkdir build
-cd build
-cmake ..
-cmake --build .
-clang -O1 -S -emit-llvm -o main.ll ../main.c
-opt -load-pass-plugin ../pass.so --passes="func-names" ./main.ll
+## What this pass does
 
-```
+For each `Function`:
+- walks instructions
+- checks `CallInst` + `getCalledFunction()`
+- compares callee name to caller name
+- prints `Recursive function detected <name>` to stdout
+
+**Concept mapping:** call graph property check (direct recursion).
+
+Limitations:
+- Detects **direct** recursion only (not mutual recursion / SCCs).
+- Prints via `std::cout` (while other passes print via `llvm::outs()`).
+
+## Build & run
+
+### Build
+```bash
+cmake -S . -B build
+cmake --build build -j
