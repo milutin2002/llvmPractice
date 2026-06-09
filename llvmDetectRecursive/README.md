@@ -1,25 +1,44 @@
-# llvmDetectRecursive — Direct Recursion Detector Pass (currently `func-names`)
+# llvmDetectRecursive
 
-- Detects **direct recursion**: a function contains a direct call to itself.
-- Useful as an “early warning” analysis for compilation targets or runtimes that restrict recursion.
+An LLVM pass plugin that detects direct recursion — functions that call themselves.
 
-## What this pass does
+## What it does
 
-For each `Function`:
-- walks instructions
-- checks `CallInst` + `getCalledFunction()`
-- compares callee name to caller name
-- prints `Recursive function detected <name>` to stdout
+For each function it walks every `call` instruction and checks whether the callee name matches the caller name. If a match is found it prints `Recursive function detected <name>`.
 
-**Concept mapping:** call graph property check (direct recursion).
+Example output for `main.c` (which contains `sum` and `fakt`, both recursive):
+```
+Recursive function detected sum
+Recursive function detected fakt
+```
 
-Limitations:
-- Detects **direct** recursion only (not mutual recursion / SCCs).
-- Prints via `std::cout` (while other passes print via `llvm::outs()`).
+> Only **direct** recursion is detected. Mutual recursion (A calls B, B calls A) is not caught because that requires a full call graph / SCC analysis.
 
-## Build & run
+## Prerequisites
 
-### Build
+- LLVM + Clang installed (`clang`, `opt`, headers, `LLVMConfig.cmake`)
+- CMake 3.20+
+- C++17 compiler
+
+## Build
+
 ```bash
 cmake -S . -B build
 cmake --build build -j
+```
+
+This produces `pass.so` in `build/`.
+
+## Run
+
+**1. Compile the target to LLVM IR:**
+```bash
+clang -O1 -emit-llvm -S main.c -o main.ll
+```
+
+**2. Run the pass with `opt`:**
+```bash
+opt -load-pass-plugin ./build/pass.so -passes="func-names" -disable-output main.ll
+```
+
+The pass is registered under the name `func-names`.

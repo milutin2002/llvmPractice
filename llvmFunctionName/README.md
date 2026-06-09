@@ -1,22 +1,47 @@
-# llvmFunctionName — Direct Call-Site Discovery Pass (`func-names`)
+# llvmFunctionName
 
-- Prints **direct callees** found inside each function by walking call instructions.
-- A practical starting point for call graph construction and interprocedural analysis.
+An LLVM pass plugin that prints each function's name and lists every direct callee it calls.
 
-## What this pass does
+## What it does
 
-For each `Function`:
-- iterates over instructions
-- `dyn_cast<CallInst>` to detect calls
-- uses `getCalledFunction()` and prints `Found function <callee> inside <caller>`
+For each function in the module it prints the function name, then for every `call` instruction inside it prints `Found function <callee> inside <caller>`.
 
-**Concept mapping:** call-site inspection → call graph edges (interprocedural analysis starter).
+Example output for `main.c`:
+```
+Function add
+Function greet
+Function main
+Found function printf inside greet
+Found function add inside main
+```
 
-> Limitation: `getCalledFunction()` is only available for **direct calls**; indirect calls are skipped.
+> Only direct calls are detected. Indirect calls through function pointers are skipped because `getCalledFunction()` returns null for those.
 
-## Build & run
+## Prerequisites
 
-### Build
+- LLVM + Clang installed (`clang`, `opt`, headers, `LLVMConfig.cmake`)
+- CMake 3.20+
+- C++17 compiler
+
+## Build
+
 ```bash
 cmake -S . -B build
 cmake --build build -j
+```
+
+This produces `pass.so` in `build/`.
+
+## Run
+
+**1. Compile the target to LLVM IR:**
+```bash
+clang -O1 -emit-llvm -S main.c -o main.ll
+```
+
+**2. Run the pass with `opt`:**
+```bash
+opt -load-pass-plugin ./build/pass.so -passes="func-names" -disable-output main.ll
+```
+
+The pass is registered under the name `func-names`.

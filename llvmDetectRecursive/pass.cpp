@@ -1,7 +1,7 @@
 #include "llvm/IR/Analysis.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"
-#include "llvm/Passes/PassPlugin.h"
+#include "llvm/Plugins/PassPlugin.h"
 #include <iostream>
 #include <llvm/ADT/StringRef.h>
 #include <llvm/Config/llvm-config.h>
