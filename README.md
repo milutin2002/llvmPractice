@@ -21,7 +21,7 @@ Current detected pass folders:
 
 ---
 
-## Why analysis passes matter (and why this maps to Tenstorrent)
+## Why analysis passes matter
 
 LLVM **analysis passes** compute properties of IR without changing semantics. In practice, analysis is the foundation for:
 - **Compiler infrastructure:** analyses enable or guide optimizations and correctness checks.
